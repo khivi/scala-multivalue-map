@@ -20,14 +20,26 @@ class MultiValueMap[K, +V](underlying: Map[K, Seq[V]]) extends Map[K, Seq[V]] {
   override def foreach[U](f: ((K, SeqV)) => U): Unit = underlying.foreach(f)
 
   // Implementation
-
-  override def + [SeqV1 >: SeqV](kv: (K, SeqV1)): This = {
+  def _add[SeqV1 >: SeqV](kv: (K, SeqV1)): This = {
     val res = (underlying.get(kv._1) match {
-      case Some(sv) => sv ++ kv._2.asInstanceOf[Seq[V]]
-      case None => kv._2.asInstanceOf[Seq[V]]
+      case Some(sv) => sv ++ kv._2.asInstanceOf[SeqV]
+      case None => kv._2.asInstanceOf[SeqV]
     })
     MultiValueMap(underlying + ((kv._1, res)))
   }
+  def ++ [SeqV1 >: SeqV](kv: (K, SeqV1)): This = this._add(kv)
+  override def + [V1 >: SeqV](kv: (K, V1)): This = this._add((kv._1, Seq(kv._2)))
+
+  def _rem[SeqV1 >: SeqV](kv: (K, SeqV1)): This = underlying.get(kv._1) match {
+      case Some(sv) =>  val kv2 = kv._2.asInstanceOf[SeqV]
+                        sv.filter(!kv2.contains(_)) match {
+                          case Nil => MultiValueMap(underlying - kv._1)
+                          case res => MultiValueMap(underlying + ((kv._1, res)))
+                        }
+      case None => this
+  }
+  def --[SeqV1 >: SeqV](kv: (K, SeqV1)): This = this._rem(kv)
+  def -[V1 >: SeqV](kv: (K, V1)): This = this._rem((kv._1, Seq(kv._2)))
 
 }
 
