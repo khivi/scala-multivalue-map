@@ -10,7 +10,8 @@ class ExampleSuite extends FunSuite {
       assert(m.size === 2)
       assert(m.get("a").get === Seq(1,2))
       assert(m.get("b") === None)
-      assert(m.get("c").get === Seq(3,4))
+      m ++= ("c", List(5))
+      assert(m.get("c").get === Seq(3,4,5))
 
       m -= "a"
       assert(m.size === 1)
@@ -22,7 +23,8 @@ class ExampleSuite extends FunSuite {
       assert(m.get("a").get === Seq(1,3,2,4))
       m += ("a", 5)
       assert(m.size === 1)
-      assert(m.get("a").get === Seq(1,3,2,4,5))
+      m += ("a", 6)
+      assert(m.get("a").get === Seq(1,3,2,4,5,6))
     }
     test("remove multiple values") {
       var m: MultiValueMap[String, Int] = MultiValueMap(Map("a" -> List(1,3,4,5)))
