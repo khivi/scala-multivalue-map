@@ -20,17 +20,17 @@ class MultiValueMap[K, +V](underlying: Map[K, Iterable[V]]) extends Map[K, Itera
   override def foreach[U](f: ((K, IterableV)) => U): Unit = underlying.foreach(f)
 
   // Implementation
-  def _add[V1, Iterable[V1] >: IterableV](kv: (K, Iterable[V1])): This = {
+  def add[V1, Iterable[V1] >: IterableV](kv: (K, Iterable[V1])): This = {
     val res = (underlying.get(kv._1) match {
       case Some(sv) => sv ++ kv._2.asInstanceOf[IterableV]
       case None => kv._2.asInstanceOf[IterableV]
     })
     MultiValueMap(underlying + ((kv._1, res)))
   }
-  def ++ [V1, Iterable[V1] >: IterableV](kv: (K, Iterable[V1])): This = this._add(kv)
-  override def + [V1 >: IterableV](kv: (K, V1)): This = this._add((kv._1, Iterable(kv._2)))
+  def ++ [V1, Iterable[V1] >: IterableV](kv: (K, Iterable[V1])): This = this.add(kv)
+  override def + [V1 >: IterableV](kv: (K, V1)): This = this.add((kv._1, Iterable(kv._2)))
 
-  def _rem[V1, Iterable[V1] >: IterableV](kv: (K, Iterable[V1])): This = underlying.get(kv._1) match {
+  def remove[V1, Iterable[V1] >: IterableV](kv: (K, Iterable[V1])): This = underlying.get(kv._1) match {
       case Some(sv) =>  val rv = kv._2.asInstanceOf[IterableV].toSet
                         sv.filter(!rv.contains(_)) match {
                           case Nil => MultiValueMap(underlying - kv._1)
@@ -38,8 +38,8 @@ class MultiValueMap[K, +V](underlying: Map[K, Iterable[V]]) extends Map[K, Itera
                         }
       case None => this
   }
-  def --[V1, Iterable[V1] >: IterableV](kv: (K, Iterable[V1])): This = this._rem(kv)
-  def -[V1 >: IterableV](kv: (K, V1)): This = this._rem((kv._1, Iterable(kv._2)))
+  def --[V1, Iterable[V1] >: IterableV](kv: (K, Iterable[V1])): This = this.remove(kv)
+  def -[V1 >: IterableV](kv: (K, V1)): This = this.remove((kv._1, Iterable(kv._2)))
 
 }
 
