@@ -5,12 +5,12 @@ import com.khivi.collection.immutable.MultiValueMap
 class ExampleSuite extends FunSuite {
     test("basic multivalue map") {
       var m: MultiValueMap[String, Int] = MultiValueMap.empty
-      m ++= ("a", List(1,2))
-      m ++= ("c", List(3,4))
+      m += ("a", List(1,2))
+      m = m addl ("c", List(3,4))
       assert(m.size === 2)
       assert(m.get("a").get === Seq(1,2))
       assert(m.get("b") === None)
-      m ++= ("c", List(5))
+      m = m addl ("c", List(5))
       assert(m.get("c").get === Seq(3,4,5))
 
       m -= "a"
@@ -21,21 +21,21 @@ class ExampleSuite extends FunSuite {
       var m: MultiValueMap[String, Int] = MultiValueMap(Map("a" -> List(1,3,2,4)))
       assert(m.size === 1)
       assert(m.get("a").get === Seq(1,3,2,4))
-      m += ("a", 5)
+      m = m add ("a", 5)
       assert(m.size === 1)
-      m += ("a", 6)
+      m = m add ("a", 6)
       assert(m.get("a").get === Seq(1,3,2,4,5,6))
     }
     test("remove multiple values") {
       var m: MultiValueMap[String, Int] = MultiValueMap(Map("a" -> List(1,3,4,5)))
       assert(m.size === 1)
       assert(m.get("a").get === Seq(1,3,4,5))
-      m -= ("a", 4)
+      m = m rem ("a", 4)
       assert(m.size === 1)
       assert(m.get("a").get === Seq(1,3,5))
-      m --= ("a", List(1,5))
+      m = m reml ("a", List(1,5))
       assert(m.get("a").get === Seq(3))
-      m --= ("a", List(3,5))
+      m = m reml ("a", List(3,5))
       assert(m.get("a") === None)
     }
 }

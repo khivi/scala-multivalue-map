@@ -11,6 +11,8 @@ class MultiValueMap[K, +V](underlying: Map[K, Iterable[V]]) extends Map[K, Itera
 
   override def iterator = underlying.iterator
 
+  override def + [IterableV1 >: IterableV](kv: (K, IterableV1)): This = MultiValueMap(underlying + kv.asInstanceOf[(K,IterableV)])
+
   override def - (key: K): This = MultiValueMap(underlying - key)
 
   override def empty: This = MultiValueMap.empty
@@ -19,28 +21,31 @@ class MultiValueMap[K, +V](underlying: Map[K, Iterable[V]]) extends Map[K, Itera
 
   override def foreach[U](f: ((K, IterableV)) => U): Unit = underlying.foreach(f)
 
-  // Implementation
-  def add[V1, Iterable[V1] >: IterableV](kv: (K, Iterable[V1])): This = {
-    val res = (underlying.get(kv._1) match {
-      case Some(sv) => sv ++ kv._2.asInstanceOf[IterableV]
-      case None => kv._2.asInstanceOf[IterableV]
-    })
-    MultiValueMap(underlying + ((kv._1, res)))
+  def add[V1, Iterable[V1] >: IterableV](kv : (K, V1)) =  {
+    val (key, value) = kv
+    addl(key -> Iterable(value))
   }
-  def ++ [V1, Iterable[V1] >: IterableV](kv: (K, Iterable[V1])): This = this.add(kv)
-  override def + [V1 >: IterableV](kv: (K, V1)): This = this.add((kv._1, Iterable(kv._2)))
+  def addl[V1, Iterable[V1] >: IterableV](kv : (K, Iterable[V1])) =  {
+    val (key, values) = kv
+    val newV = underlying.getOrElse(key, Iterable()) ++ values.asInstanceOf[IterableV]
+    MultiValueMap(underlying + (key -> newV))
+  }
 
-  def remove[V1, Iterable[V1] >: IterableV](kv: (K, Iterable[V1])): This = underlying.get(kv._1) match {
-      case Some(sv) =>  val rv = kv._2.asInstanceOf[IterableV].toSet
-                        sv.filter(!rv.contains(_)) match {
-                          case Nil => MultiValueMap(underlying - kv._1)
-                          case res => MultiValueMap(underlying + ((kv._1, res)))
-                        }
+  def rem[V1, Iterable[V1] >: IterableV](kv : (K, V1)) =  {
+    val (key, value) = kv
+    reml(key -> Iterable(value))
+  }
+  def reml[V1, Iterable[V1] >: IterableV](kv : (K, Iterable[V1])) =  {
+    val (key, values) = kv
+    underlying.get(key) match {
+      case Some(oldV) =>  val remove = values.asInstanceOf[IterableV].toSet
+                  oldV.filter(!remove.contains(_)) match {
+                    case Nil => MultiValueMap(underlying - key)
+                    case newV => MultiValueMap(underlying + (key -> newV))
+                  }
       case None => this
+    }
   }
-  def --[V1, Iterable[V1] >: IterableV](kv: (K, Iterable[V1])): This = this.remove(kv)
-  def -[V1 >: IterableV](kv: (K, V1)): This = this.remove((kv._1, Iterable(kv._2)))
-
 }
 
 object MultiValueMap {
