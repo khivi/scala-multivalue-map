@@ -25,6 +25,8 @@ class ExampleSuite extends FunSuite {
       assert(m.size === 1)
       m = m add ("a", 6)
       assert(m.get("a").get === Seq(1,3,2,4,5,6))
+      m = m addl ("a", List(1,3,5,7))
+      assert(m.get("a").get === Seq(1,3,2,4,5,6,1,3,5,7))
     }
     test("remove multiple values") {
       var m: MultiValueMap[String, Int] = MultiValueMap(Map("a" -> List(1,3,4,5)))
@@ -37,6 +39,18 @@ class ExampleSuite extends FunSuite {
       assert(m.get("a").get === Seq(3))
       m = m reml ("a", List(3,5))
       assert(m.get("a") === None)
+    }
+    test("immutability ") {
+      var m: MultiValueMap[String, Int] = MultiValueMap.empty
+      val m1 = m add ("d", 0)
+      assert(m.size === 0)
+      m = m add ("d", 0)
+      assert(m.size === 1)
+
+      val m2 = m rem ("d", 0)
+      assert(m.size === 1)
+      m = m rem ("d", 0)
+      assert(m.size === 0)
     }
 }
 
