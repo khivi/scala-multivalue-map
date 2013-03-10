@@ -4,19 +4,23 @@ package immutable
 
 class MultiValueMap[K, +V] private (underlying: Map[K, Iterable[V]]) extends Map[K, Iterable[V]] 
 {
-  type U = Map[K, Iterable[V]]
+  type UV = Iterable[V]
+  type U = Map[K, UV]
   type This = MultiValueMap[K, V]
 
-  override def get(key: K): Option[Iterable[V]] = underlying.get(key)
+  private def update[IterableV1 >: UV](key:K, value: IterableV1): This = new MultiValueMap[K,V](underlying + (key -> value.asInstanceOf[UV]))
+  private def remove(key:K): This = new MultiValueMap[K,V](underlying - key)
+
+  override def get(key: K): Option[UV] = underlying.get(key)
 
   override def iterator = underlying.iterator
 
-  override def + [B >: Iterable[V]](kv: (K, B)): This =  {
+  override def + [IterableV1 >: UV](kv: (K, IterableV1)): This =  {
     val (key, value) = kv
-    new MultiValueMap[K,V](underlying + (key -> value.asInstanceOf[Iterable[V]]))
+    update(key, value)
   }
 
-  override def - (key: K): This = MultiValueMap(underlying - key)
+  override def - (key: K): This = remove(key)
 
   override def empty: This = MultiValueMap.empty
 
@@ -31,7 +35,7 @@ class MultiValueMap[K, +V] private (underlying: Map[K, Iterable[V]]) extends Map
   def addl[V1 >: V](kv : (K, Iterable[V1])) =  {
     val (key, values) = kv
     val newV = underlying.getOrElse(key, Iterable[V]()) ++ values
-    MultiValueMap(underlying + (key -> newV))
+    update(key, newV)
   }
 
   def rem[V1 >: V](kv : (K, V1)) =  {
@@ -41,10 +45,10 @@ class MultiValueMap[K, +V] private (underlying: Map[K, Iterable[V]]) extends Map
   def reml[V1 >: V](kv : (K, Iterable[V1])) =  {
     val (key, values) = kv
     underlying.get(key) match {
-      case Some(oldV) =>  val remove = values.toSet
-                          oldV.filter(!remove.contains(_)) match {
-                            case Nil => MultiValueMap(underlying - key)
-                            case newV => MultiValueMap(underlying + (key -> newV))
+      case Some(oldV) =>  val removeV = values.toSet
+                          oldV.filter(!removeV.contains(_)) match {
+                            case Nil => remove(key)
+                            case newV => update(key, newV)
                           }
       case None => this
     }
