@@ -1,19 +1,28 @@
 package com.khivi.collection
 package mutable
 
-class MultiValueMap[K, +V] private (override val delegate: Map[K, Iterable[V]]) extends Map[K,Iterable[V]] with MultiValueMapLike[K,V, MultiValueMap[K,V]] 
+
+import scala.collection.mutable.Map
+
+class MultiValueMap[K, V] private (self: Map[K, Iterable[V]]) extends Map[K, Iterable[V]] with MultiValueMapImpl[K,V, MultiValueMap[K,V]]
 {
+  def get(key: K): Option[Iterable[V]] = self.get(key)
+  def iterator: Iterator[(K, Iterable[V])] = self.iterator
+  def += (kv: (K, Iterable[V])) = { self += kv; this }
+  def -= (key: K) = { self -= key; this}
 
-  def _update[IterableV1 >: UV](key:K, value: IterableV1) = new MultiValueMap[K,V](delegate + (key -> value.asInstanceOf[UV]))
-  def _remove(key:K) = new MultiValueMap[K,V](delegate - key)
-  override def empty = MultiValueMap.empty
-
+  override def _update[IterableV1 >: Iterable[V]](key:K, value: IterableV1) = {
+    self += (key -> value.asInstanceOf[Iterable[V]])
+    this
+  }
+  override def _remove(key:K) = {
+    self -= key
+    this
+  }
 }
 
 object MultiValueMap
 {
-  private object EmptyMap extends MultiValueMap[Any, Nothing](Map.empty)
-
-  def empty[K,V] = EmptyMap.asInstanceOf[MultiValueMap[K, V]]
+  def empty[K,V] = new MultiValueMap[K,V](Map[K, Iterable[V]]())
   def apply[K,V](delegate: Map[K, Iterable[V]]) = new MultiValueMap(delegate)
 }

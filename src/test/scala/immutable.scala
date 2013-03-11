@@ -5,7 +5,7 @@ import com.khivi.collection.immutable.MultiValueMap
 class ImmutableSuite extends FunSuite {
     test("basic multivalue map") {
       var m: MultiValueMap[String, Int] = MultiValueMap.empty
-      m += ("a", List(1,2))
+      m = m addl  ("a", List(1,2))
       m = m addl ("c", List(3,4))
       assert(m.size === 2)
       assert(m.get("a").get === Seq(1,2))
@@ -13,9 +13,7 @@ class ImmutableSuite extends FunSuite {
       m = m addl ("c", List(5))
       assert(m.get("c").get === Seq(3,4,5))
 
-      m -= "a"
-      assert(m.size === 1)
-      assert(m.get("a") == None)
+      assert((m - "a").get("a") == None)
     }
     test("add multiple values") {
       var m: MultiValueMap[String, Int] = MultiValueMap(Map("a" -> List(1,3,2,4)))
