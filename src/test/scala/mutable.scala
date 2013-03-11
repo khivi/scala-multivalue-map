@@ -1,8 +1,8 @@
 
 import org.scalatest.FunSuite
-import com.khivi.collection.immutable.MultiValueMap
+import com.khivi.collection.mutable.MultiValueMap
 
-class ImmutableSuite extends FunSuite {
+class MutableSuite extends FunSuite {
     test("basic multivalue map") {
       var m: MultiValueMap[String, Int] = MultiValueMap.empty
       m += ("a", List(1,2))
