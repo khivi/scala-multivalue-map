@@ -5,7 +5,6 @@ import scala.collection.{Map, MapLike}
 trait MultiValueMapImpl[K, +V, +This <: MultiValueMapImpl[K, V, This] with Map[K, Iterable[V]]] extends MapLike[K, Iterable[V], This]
 {
   protected[this] def _update[IterableV1 >: Iterable[V]](kv:(K, IterableV1)): This
-  protected[this] def _remove(key:K): This
 
   def add[V1 >: V](kv : (K, V1)): This =  {
     val (key, value) = kv
@@ -29,7 +28,7 @@ trait MultiValueMapImpl[K, +V, +This <: MultiValueMapImpl[K, V, This] with Map[K
     get(key) match {
       case Some(oldV) =>  val removeV = values.toSet
                           oldV.filter(!removeV.contains(_)) match {
-                            case Nil => _remove(key)
+                            case Nil => this - key
                             case newV => _update((key, newV))
                           }
       case None => this.asInstanceOf[This]

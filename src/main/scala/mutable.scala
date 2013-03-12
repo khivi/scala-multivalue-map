@@ -9,14 +9,11 @@ class MultiValueMap[K, V] private (self: Map[K, Iterable[V]]) extends Map[K, Ite
   override def iterator: Iterator[(K, Iterable[V])] = self.iterator
   override def += (kv: (K, Iterable[V])) = { self += kv; this }
   override def -= (key: K) = { self -= key; this}
+  override def -(key: K) =  { self -= key; this}
   override def empty = MultiValueMap.empty[K,V]
 
   override def _update[IterableV1 >: Iterable[V]](kv:(K, IterableV1)) = {
     self += (kv._1 -> kv._2.asInstanceOf[Iterable[V]])
-    this
-  }
-  override def _remove(key:K) = {
-    self -= key
     this
   }
 }

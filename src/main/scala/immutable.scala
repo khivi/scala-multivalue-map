@@ -14,7 +14,6 @@ class MultiValueMap[K, +V] private (delegate: Map[K, Iterable[V]]) extends Map[K
 
 
   override def _update[IterableV1 >: Iterable[V]](kv:(K, IterableV1)) = new MultiValueMap[K,V](delegate + (kv._1 -> kv._2.asInstanceOf[Iterable[V]]))
-  override def _remove(key:K) = new MultiValueMap[K,V](delegate - key)
 }
 
 object MultiValueMap
