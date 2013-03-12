@@ -3,19 +3,16 @@ package mutable
 
 import scala.collection.mutable.{Map, MapLike}
 
-class MultiValueMap[K, V] private (self: Map[K, Iterable[V]]) extends Map[K, Iterable[V]] with MultiValueMapImpl[K,V, MultiValueMap[K,V]] with MapLike[K, Iterable[V], MultiValueMap[K,V]]
+class MultiValueMap[K, V] private (delegate: Map[K, Iterable[V]]) extends Map[K, Iterable[V]] with MultiValueMapImpl[K,V, MultiValueMap[K,V]] with MapLike[K, Iterable[V], MultiValueMap[K,V]]
 {
-  override def get(key: K): Option[Iterable[V]] = self.get(key)
-  override def iterator: Iterator[(K, Iterable[V])] = self.iterator
-  override def += (kv: (K, Iterable[V])) = { self += kv; this }
-  override def -= (key: K) = { self -= key; this}
-  override def -(key: K) =  { self -= key; this}
+  override def get(key: K) = delegate.get(key)
+  override def iterator = delegate.iterator
+  override def += (kv: (K, Iterable[V])) = { delegate += kv; this }
+  override def -= (key: K) = { delegate -= key; this}
   override def empty = MultiValueMap.empty[K,V]
 
-  override def _update[IterableV1 >: Iterable[V]](kv:(K, IterableV1)) = {
-    self += (kv._1 -> kv._2.asInstanceOf[Iterable[V]])
-    this
-  }
+  override def -(key: K) =  new MultiValueMap[K,V](delegate-key)
+  override def +[B1 >: Iterable[V]](kv: (K, B1)) =  (delegate + kv)
 }
 
 object MultiValueMap
