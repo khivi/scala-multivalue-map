@@ -1,10 +1,11 @@
 package com.khivi.collection
 
-trait MultiValueMapImpl[K, +V, +This <: MultiValueMapImpl[K, V, This]]
+import scala.collection.{Map, MapLike}
+
+trait MultiValueMapImpl[K, +V, +This <: MultiValueMapImpl[K, V, This] with Map[K, Iterable[V]]] extends MapLike[K, Iterable[V], This]
 {
-  protected[this] def _update[IterableV1 >: Iterable[V]](key:K, value: IterableV1): This
+  protected[this] def _update[IterableV1 >: Iterable[V]](kv:(K, IterableV1)): This
   protected[this] def _remove(key:K): This
-  def get(key: K): Option[Iterable[V]]
 
   def add[V1 >: V](kv : (K, V1)): This =  {
     val (key, value) = kv
@@ -16,7 +17,7 @@ trait MultiValueMapImpl[K, +V, +This <: MultiValueMapImpl[K, V, This]]
                 case Some(oldV) => oldV
                 case None => Iterable[V]()
                }) ++ values
-    _update(key, newV)
+    _update((key, newV))
   }
 
   def rem[V1 >: V](kv : (K, V1)): This =  {
@@ -29,7 +30,7 @@ trait MultiValueMapImpl[K, +V, +This <: MultiValueMapImpl[K, V, This]]
       case Some(oldV) =>  val removeV = values.toSet
                           oldV.filter(!removeV.contains(_)) match {
                             case Nil => _remove(key)
-                            case newV => _update(key, newV)
+                            case newV => _update((key, newV))
                           }
       case None => this.asInstanceOf[This]
     }
