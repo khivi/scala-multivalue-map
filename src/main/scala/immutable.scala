@@ -4,7 +4,10 @@ package immutable
 
 import scala.collection.immutable.{Map, MapLike}
 
-class MultiValueMap[K, +V] private (delegate: Map[K, Iterable[V]]) extends Map[K, Iterable[V]] with MultiValueMapImpl[K,V, MultiValueMap[K,V]] with MapLike[K, Iterable[V], MultiValueMap[K,V]]
+class MultiValueMap[K, +V] private (delegate: Map[K, Iterable[V]]) 
+      extends Map[K, Iterable[V]] 
+      with MultiValueMapLike[K,V, MultiValueMap[K,V]] 
+      with MapLike[K, Iterable[V], MultiValueMap[K,V]]
 {
   override def get(key: K) =  delegate.get(key)
   override def iterator =  delegate.iterator
