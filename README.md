@@ -4,13 +4,13 @@ scala-multivalue-map
 Multivalue maps in scala
 =======
 
-    scala> var m = MultiValueMap.empty[String, Int]
-    m: com.khivi.collection.immutable.MultiValueMap[String,Int] = Map()
-    scala> m.add("a", 1)
-    scala> m.addl("b", List(3,4,5))
-    scala> m.toString
-    res12: String = Map(a -> List(1), b -> List(3, 4, 5))
-    scala> m.rem("a", 1)
-    scala> m.reml("b", List(3,5))
-    scala> m.toString
-    res16: String = Map(b -> List(4))
+	scala> com.khivi.collection.immutable.MultiValueMap.empty[String,Int]
+	res0: com.khivi.collection.immutable.MultiValueMap[String,Int] = Map()
+	scala> res0.addl("a", List(1,2))
+	res1: com.khivi.collection.immutable.MultiValueMap[String,Int] = Map(a -> List(1, 2))
+	scala> res1.add("a", 3)
+	res2: com.khivi.collection.immutable.MultiValueMap[String,Int] = Map(a -> List(1, 2, 3))
+	scala> res2.reml("a", List(1,3))
+	res3: com.khivi.collection.immutable.MultiValueMap[String,Int] = Map(a -> List(2))
+	scala> res3.rem("a",2)
+	res5: com.khivi.collection.immutable.MultiValueMap[String,Int] = Map()

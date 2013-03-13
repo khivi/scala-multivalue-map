@@ -14,21 +14,18 @@ class MultiValueMap[K, +V] private (delegate: Map[K, Iterable[V]]) extends Map[K
 
   override def addl[V1 >: V](kv : (K, Iterable[V1])) =  {
     val (key, values) = kv
-    val newV = (get(key) match {
-                case Some(oldV) => oldV
-                case None => Iterable[V]()
-               }) ++ values
-    (this + (key -> newV))
+    val newValues = getOrElse(key, Iterable[V]()) ++ values
+    (this + (key -> newValues))
   }
 
   override def reml[V1 >: V](kv : (K, Iterable[V1])) =  {
     val (key, values) = kv
     get(key) match {
-      case Some(oldV) =>  val removeV = values.toSet
-                          oldV.filter(!removeV.contains(_)) match {
-                            case Nil => this - key
-                            case newV => (this + (key -> newV))
-                          }
+      case Some(oldValues) =>  val removeV = values.toSet
+                               oldValues.filter(!removeV.contains(_)) match {
+                                 case Nil => this - key
+                                 case newValues => (this + (key -> newValues))
+                               }
       case None => this
     }
   }
