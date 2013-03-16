@@ -39,5 +39,5 @@ class MultiValueMap[K, V] private (delegate: Map[K, Iterable[V]])
 object MultiValueMap
 {
   def empty[K,V] = new MultiValueMap[K,V](Map[K, Iterable[V]]())
-  def apply[K,V](delegate: Map[K, Iterable[V]]) = new MultiValueMap(delegate)
+  def apply[K,V](delegate: Map[K, Iterable[V]] = Map[K, Iterable[V]]()) = new MultiValueMap(delegate)
 }

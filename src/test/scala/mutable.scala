@@ -5,7 +5,7 @@ import scala.collection.mutable.Map
 
 class MutableSuite extends FunSuite {
     test("basic multivalue map") {
-      val m: MultiValueMap[String, Int] = MultiValueMap.empty
+      val m: MultiValueMap[String, Int] = MultiValueMap()
       m addl  ("a", List(1,2))
       m addl ("c", List(3,4))
       assert(m.size === 2)
