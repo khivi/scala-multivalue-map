@@ -15,14 +15,12 @@ class MultiValueMap[K, +V] private (delegate: Map[K, Iterable[V]])
   override def -(key: K) =  new MultiValueMap[K,V](delegate-key)
   override def empty = MultiValueMap.empty[K,V]
 
-  override def addl[V1 >: V](kv : (K, Iterable[V1])) =  {
-    val (key, values) = kv
+  override def addl[V1 >: V](key: K, values:Iterable[V1]) =  {
     val newValues = getOrElse(key, Iterable[V]()) ++ values
     (this + (key -> newValues))
   }
 
-  override def reml[V1 >: V](kv : (K, Iterable[V1])) =  {
-    val (key, values) = kv
+  override def reml[V1 >: V](key: K,  values:Iterable[V1]) =  {
     get(key) match {
       case Some(oldValues) =>  val removeV = values.toSet
                                oldValues.filter(!removeV.contains(_)) match {
