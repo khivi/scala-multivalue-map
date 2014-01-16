@@ -4,7 +4,6 @@ scala-multivalue-map
 Multivalue maps in scala
 =======
 
-
 	scala> com.khivi.collection.immutable.MultiValueMap.empty[String, Int]
 	res0: com.khivi.collection.immutable.MultiValueMap[String,Int] = Map()
 	scala> res0 + ("a", List(1,2))
