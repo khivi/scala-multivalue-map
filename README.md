@@ -14,3 +14,6 @@ Multivalue maps in scala
 	res3: com.khivi.collection.immutable.MultiValueMap[String,Int] = Map(a -> List(2))
 	scala> res3- ("a" , 2)
 	res4: com.khivi.collection.immutable.MultiValueMap[String,Int] = Map()
+
+=======
+[![Build Status](https://travis-ci.org/khivi/scala-multivalue-map.png?branch=master)](https://travis-ci.org/khivi/scala-multivalue-map)
